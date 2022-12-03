@@ -38,19 +38,19 @@ fn solve1(input: impl BufRead) -> AnyResult<u64> {
     Ok(total_score)
 }
 
-fn solve2(input: impl BufRead) -> AnyResult<u64> {
+fn solve2(input: impl BufRead) -> AnyResult<u32> {
     let total_score = input.lines()
         .map(|l| l.unwrap().trim().to_string())
         .filter(|l| !l.is_empty())
         .chunks(3)
         .into_iter()
-        .fold(0u64, |total_score, group| {
+        .fold(0, |total_score, group| {
             let common_items = group
                 .map(|l| l.chars().collect::<HashSet<_>>())
                 .reduce(|common_items, items| common_items.intersection(&items).map(|i| *i).collect())
                 .unwrap();
             assert_eq!(common_items.len(), 1);
-            total_score + score_item(*common_items.iter().next().unwrap()) as u64
+            total_score + common_items.iter().map(|i| score_item(*i)).sum::<u32>()
         });
         
     Ok(total_score)
