@@ -38,16 +38,22 @@ fn parse_section(s: &str) -> (u32, u32) {
 }
 
 fn solve2(input: impl BufRead) -> AnyResult<u32> {
-    let mut total_score = 0u32;
-    for line in input.lines() {
-        let _row = line?;
-        let row = _row.trim();
-        if row.is_empty() {
-            continue;
-        }
-    }
+    let total_score = input.lines()
+        .map(|l| l.unwrap().trim().to_string())
+        .filter(|l| !l.is_empty())
+        .map(|l| {
+            let (section1, section2) = l.split_once(',').unwrap();
+            (parse_section(section1), parse_section(section2))
+        })
+        .filter(is_overlapping)
+        .count();
         
-    Ok(total_score)
+    Ok(total_score as u32)
+}
+
+fn is_overlapping(sections: &((u32, u32), (u32, u32))) -> bool {
+    sections.0.0 <= sections.1.1 && sections.0.1 >= sections.1.0 ||
+    sections.0.1 >= sections.1.0 && sections.0.0 <= sections.1.1
 }
 
 #[cfg(test)]
@@ -75,7 +81,7 @@ mod tests {
     fn test2() {
         assert_eq!(
             solve2(INPUT.as_bytes()).unwrap(),
-            0u32
+            4u32
         );
     }
 }
