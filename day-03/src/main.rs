@@ -92,7 +92,7 @@ mod tests {
     fn test2() {
         assert_eq!(
             solve2(INPUT.as_bytes()).unwrap(),
-            70u64
+            70u32
         );
     }
 }
