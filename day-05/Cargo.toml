@@ -7,4 +7,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = { workspace = true }
+indoc = { workspace = true }
 itertools = { workspace = true }
+nom = { workspace = true }
