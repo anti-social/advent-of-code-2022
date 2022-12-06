@@ -6,7 +6,7 @@ use anyhow::Result as AnyResult;
 use itertools::Itertools;
 
 fn main() -> AnyResult<()> {
-    let input = read_to_string("day-06/input.txt")?;
+    let input = read_to_string("day-07/input.txt")?;
 
     println!("{}", solve1(&input)?);
     println!("{}", solve2(&input)?);
