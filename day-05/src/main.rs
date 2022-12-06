@@ -32,11 +32,29 @@ fn solve1(input: &str) -> AnyResult<String> {
         }
     }
 
-    let top = stacks.iter()
-        .filter_map(|stack| stack.last())
-        .collect::<String>();
+    Ok(collect_top_crates(stacks))
+}
 
-    Ok(top)
+
+fn solve2(input: &str) -> AnyResult<String> {
+    let (actions_input, mut stacks) = parse_crate_stacks(input).unwrap();
+    let (rest, moves) = parse_moves(actions_input).unwrap();
+    assert_eq!(rest.trim(), "");
+
+    for mv in moves.iter() {
+        let src_stack = stacks.get_mut(mv.src as usize - 1).unwrap();
+        let moving_crates = src_stack.split_off(src_stack.len() - mv.num_crates as usize);
+        let dst_stack = stacks.get_mut(mv.dst as usize - 1).unwrap();
+        dst_stack.extend(moving_crates);
+    }
+
+    Ok(collect_top_crates(stacks))
+}
+
+fn collect_top_crates(stacks: Vec<Vec<char>>) -> String {
+    stacks.iter()
+        .filter_map(|stack| stack.last())
+        .collect::<String>()
 }
 
 fn parse_crate(input: &str) -> IResult<&str, Option<char>> {
@@ -131,10 +149,6 @@ struct Move {
     dst: u32,
 }
 
-fn solve2(input: &str) -> AnyResult<u32> {
-    Ok(0)
-}
-
 #[cfg(test)]
 mod tests {
     use indoc::indoc;
@@ -166,7 +180,7 @@ mod tests {
     fn test2() {
         assert_eq!(
             solve2(INPUT).unwrap(),
-            8u32
+            "MCD"
         );
     }
 }
