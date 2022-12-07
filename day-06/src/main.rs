@@ -1,6 +1,6 @@
-use std::collections::HashSet;
-use std::fs::{File, read_to_string};
-use std::io::{BufRead, BufReader, Read};
+use std::collections::{HashSet, HashMap};
+use std::collections::hash_map::Entry::{Occupied, Vacant};
+use std::fs::read_to_string;
 
 use anyhow::Result as AnyResult;
 
@@ -30,8 +30,29 @@ fn solve1(input: &str) -> AnyResult<i32> {
     Ok(-1)
 }
 
-fn solve2(input: &str) -> AnyResult<u32> {
-    Ok(0)
+fn solve2(input: &str) -> AnyResult<i32> {
+    let data = input.chars().collect::<Vec<_>>();
+    let mut cur_chars = HashMap::new();
+    for (ix, c) in data.iter().enumerate() {
+        *cur_chars.entry(c).or_insert(0) += 1;
+        if ix >= 14 {
+            let drop_char = data.get(ix - 14).unwrap();
+            match cur_chars.entry(drop_char) {
+                Occupied(mut e) => {
+                    *e.get_mut() -= 1;
+                    if *e.get() == 0 {
+                        e.remove();
+                    }
+                }
+                Vacant(_) => unreachable!(),
+            }
+        }
+        if cur_chars.len() == 14 {
+            return Ok(ix as i32 + 1);
+        }
+    }
+
+    Ok(-1)
 }
 
 #[cfg(test)]
@@ -52,7 +73,7 @@ mod tests {
     fn test2() {
         assert_eq!(
             solve2(INPUT).unwrap(),
-            0
+            19
         );
     }
 }
